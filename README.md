@@ -68,3 +68,4 @@ This project simulates a real-world rental management system with user authentic
 
 <img width="400" height="513" alt="image" src="https://github.com/user-attachments/assets/81160f8a-36cc-406e-ac83-eee2423ef917" />
 
+<img width="468" height="408" alt="image" src="https://github.com/user-attachments/assets/7bd10845-e493-4dea-8322-fdc6bdc01325" />
