@@ -2,7 +2,7 @@
 
 A Command Line Interface (CLI) based outdoor equipment rental system built using Python.
 
-This project simulates a real-world rental management system with user authentication, inventory management, and full CRUD operations — all implemented in a single Python file without using any external libraries or databases.
+This project simulates a real-world rental management system with user authentication, inventory management, and full CRUD operations, all implemented in a single Python file without using any external libraries or databases.
 
 ---
 
