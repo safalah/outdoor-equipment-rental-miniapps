@@ -933,14 +933,11 @@ def tampilkan_data_personal(userid):
         print("\n------- DATA PERSONAL SAYA -------")
         print()
         
-        # Mencari data user
         user_data = next((u for u in users if u["userid"] == userid), None)
         
         if not user_data:
             print("\nData user tidak ditemukan.")
-            return False
-
-        # Menampilkan data
+            return None 
         print(f"UserID   : {user_data['userid']}")
         print(f"Nama     : {user_data['nama']}")
         print(f"Email    : {user_data['email']}")
@@ -957,7 +954,6 @@ def tampilkan_data_personal(userid):
         print(f"  Lat     : {user_data['geo']['lat']}")
         print(f"  Lon     : {user_data['geo']['lon']}")
 
-        # MENU LANJUTAN
         print("\n─────────────────────────────")
         print("1. Ubah Data (ID & Password)")
         print("2. Hapus Akun")
@@ -967,13 +963,18 @@ def tampilkan_data_personal(userid):
         pilih = input("Pilih Menu (1-3): ")
 
         if pilih == "1":
-            ubah_data_personal(userid)
+            # ID Baru 
+            newuserid = ubah_data_personal(userid)
+            # Cek apakah ID berubah
+            if newuserid != userid:
+                userid = newuserid
+                
         elif pilih == "2":
-            # Jika hapus akun berhasil (return True)
             if hapus_akun(userid):
-                return True  
+                return None 
+            
         elif pilih == "3":
-            return False  
+            return userid
             
         else:
             print("❌ Pilihan tidak valid")
@@ -984,20 +985,19 @@ def ubah_data_personal(userid):
     user = next((u for u in users if u["userid"] == userid), None)
     if not user:
         print("❌ Data user tidak ditemukan.")
-        return
+        return userid 
 
     while True:
         print("\n------- UBAH DATA PERSONAL -------")
         print()
         print("Data yang bisa diubah:")
         print(f"1. UserID  : {user['userid']}")
-        print(f"2. Password: {'*' * len(user['password'])}")
+        print(f"2. Password: {user['password']}")
         print("0. Kembali")
 
         pilih = input("Pilih data yang ingin diubah: ")
 
         if pilih == "1":
-            # Ubah UserID
             print("\n------- Update User ID -------")
             print()
             while True:
@@ -1036,10 +1036,14 @@ def ubah_data_personal(userid):
                         user['userid'] = new_userid
                         print()
                         print("✅ User ID berhasil diubah.")
-                        break # Keluar loop input
+                        return new_userid 
+                    else:
+                        print("❌ Perubahan dibatalkan.")
+                        return userid
+                else:
+                    continue
 
         elif pilih == "2":
-            # Ubah Password
             print("\n------- Update Password -------")
             print()
             password_baru = input_password()
@@ -1055,6 +1059,8 @@ def ubah_data_personal(userid):
         else:
             print()
             print("❌ Pilihan tidak valid.")
+            
+    return userid
 
 # Sub Menu DELETE Akun 
 
@@ -1097,9 +1103,11 @@ def menu_penyewa(userid):
         elif pilih == "5":
             batalkan_penyewaan(userid)
         elif pilih == "6":
-            akun_terhapus = tampilkan_data_personal(userid)
-            if akun_terhapus:
+            hasil = tampilkan_data_personal(userid)
+            if hasil is None:
                 break
+            else:
+                userid = hasil
         elif pilih == "7":
             print()
             print("Anda telah keluar. Terima kasih! 🌿")
@@ -1130,9 +1138,7 @@ def menu():
             print()
             print("❌ Pilihan tidak valid")
 
-
 # ==========================================
 # RUN PROGRAM
 # ==========================================
-
 menu()
