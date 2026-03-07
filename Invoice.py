@@ -1,4 +1,4 @@
-from Database import data_penyewaan, alat_outdoor, users
+from Database import get_user_rentals, get_equipment, get_user
 # ==========================================
 # Sub Menu READ Riwayat Penyewaan
 # ==========================================
@@ -12,8 +12,8 @@ def view_invoice(userid):
     
     total_lebar = 4 + lebar_nama + lebar_jumlah + lebar_lama + lebar_total + 15  # tambah 5 untuk garis vertikal2
     tanggal_sewa = str(datetime.date.today())
-    user_data = next((u for u in users if u["userid"] == userid), None)
-    penyewaan_user = [t for t in data_penyewaan if t.get("userid") == userid and t.get("status") == "active"]
+    user_data = get_user(userid)
+    penyewaan_user = get_user_rentals(userid, "active")
 
     print("\n" + "="*total_lebar)
     print("🌿 ARUNIKA RENTAL OUTDOOR 🌿".center(total_lebar))
@@ -40,7 +40,8 @@ def view_invoice(userid):
             lama = t["lama_sewa"]
             total = t["total_harga"]
             
-            nama_barang = next((a["nama"] for a in alat_outdoor if a["kode"] == kode), "Unknown")
+            barang = get_equipment(kode)
+            nama_barang = barang["nama"] if barang else "Unknown"
             if len(nama_barang) > lebar_nama - 1:
                 nama_barang = nama_barang[:lebar_nama-4] + "..."
             

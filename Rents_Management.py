@@ -1,7 +1,7 @@
 # ==========================================
 # ADMIN MAIN MENU (2) Rental Management
 # ==========================================
-from Database import data_penyewaan, alat_outdoor, users
+from Database import get_all_rentals, get_rentals_by_status, delete_rental, get_equipment, get_user
 width = 60
 
 # Fungsi helper untuk menampilkan penyewaan berdasarkan status
@@ -13,7 +13,7 @@ def view_rent_by_status_admin(status_filter):
     lebar_total = 13
     total_lebar = 7 + lebar_renter + lebar_nama + lebar_jumlah + lebar_lama + lebar_total + 15
 
-    penyewaan_filtered = [t for t in data_penyewaan if t.get("status") == status_filter]
+    penyewaan_filtered = get_rentals_by_status(status_filter)
 
     print("\n" + "="*total_lebar)
     print("🌿 ARUNIKA RENTAL OUTDOOR 🌿".center(total_lebar))
@@ -29,9 +29,11 @@ def view_rent_by_status_admin(status_filter):
     print("-"*total_lebar)
 
     for idx, t in enumerate(penyewaan_filtered, start=1):
-        renter = next((u["nama"] for u in users if u["userid"] == t["userid"]), "Unknown")
+        user = get_user(t["userid"])
+        renter = user["nama"] if user else "Unknown"
         kode = t["kode_barang"]
-        nama_barang = next((a["nama"] for a in alat_outdoor if a["kode"] == kode), "Unknown")
+        barang = get_equipment(kode)
+        nama_barang = barang["nama"] if barang else "Unknown"
         if len(nama_barang) > lebar_nama - 1:
             nama_barang = nama_barang[:lebar_nama-4] + "..."
         print(f"| {idx:<3} | {renter:<{lebar_renter}} | {nama_barang:<{lebar_nama}} | {t['jumlah']:<{lebar_jumlah}} | {t['lama_sewa']:<{lebar_lama}} | {t['total_harga']:<{lebar_total},} |")
@@ -54,6 +56,7 @@ def display_all_rent():
     print("ALL RENTAL DATA".center(total_lebar))
     print("="*total_lebar)
 
+    data_penyewaan = get_all_rentals()
     if not data_penyewaan:
         print("⚠️   No rental data available.".center(total_lebar))
         return
@@ -63,10 +66,12 @@ def display_all_rent():
     print("-"*total_lebar)
 
     for idx, t in enumerate(data_penyewaan, start=1):
-        renter = next((u["nama"] for u in users if u["userid"] == t["userid"]), "Unknown")
+        user = get_user(t["userid"])
+        renter = user["nama"] if user else "Unknown"
         status = t.get("status", "N/A")
         kode = t["kode_barang"]
-        nama_barang = next((a["nama"] for a in alat_outdoor if a["kode"] == kode), "Unknown")
+        barang = get_equipment(kode)
+        nama_barang = barang["nama"] if barang else "Unknown"
         if len(nama_barang) > lebar_nama - 1:
             nama_barang = nama_barang[:lebar_nama-4] + "..."
         jumlah = t["jumlah"]
@@ -116,7 +121,7 @@ def delete_rent_by_status(status_filter):
     total_lebar = 5 + lebar_renter + lebar_nama + lebar_jumlah + lebar_lama + lebar_total + 15
 
     # Filter data yang sesuai status
-    penyewaan_filtered = [t for t in data_penyewaan if t.get("status") == status_filter]
+    penyewaan_filtered = get_rentals_by_status(status_filter)
 
     if not penyewaan_filtered:
         print(f"\n⚠️  No {status_filter} rentals to delete.".center(total_lebar))
@@ -132,9 +137,11 @@ def delete_rent_by_status(status_filter):
     print("-"*total_lebar)
 
     for idx, t in enumerate(penyewaan_filtered, start=1):
-        renter = next((u["nama"] for u in users if u["userid"] == t["userid"]), "Unknown")
+        user = get_user(t["userid"])
+        renter = user["nama"] if user else "Unknown"
         kode = t["kode_barang"]
-        nama_barang = next((a["nama"] for a in alat_outdoor if a["kode"] == kode), "Unknown")
+        barang = get_equipment(kode)
+        nama_barang = barang["nama"] if barang else "Unknown"
         if len(nama_barang) > lebar_nama - 1:
             nama_barang = nama_barang[:lebar_nama-4] + "..."
         print(f"| {idx:<3} | {renter:<{lebar_renter}} | {nama_barang:<{lebar_nama}} | {t['jumlah']:<{lebar_jumlah}} | {t['lama_sewa']:<{lebar_lama}} | {t['total_harga']:>{lebar_total},} |")
@@ -153,8 +160,13 @@ def delete_rent_by_status(status_filter):
 
         idx_delete = int(pilih) - 1
         rent_to_delete = penyewaan_filtered[idx_delete]
-        data_penyewaan.remove(rent_to_delete)
-        print(f"✅ Rental '{rent_to_delete['kode_barang']}' for renter '{next((u['nama'] for u in users if u['userid']==rent_to_delete['userid']), 'Unknown')}' has been deleted.")
+        delete_rental(rent_to_delete['id_transaksi'], rent_to_delete['userid'], rent_to_delete['kode_barang'])
+
+        # Ambil nama renter dari database
+        user = get_user(rent_to_delete['userid'])
+        renter_name = user["nama"] if user else "Unknown"
+
+        print(f"✅ Rental '{rent_to_delete['kode_barang']}' for renter '{renter_name}' has been deleted.")
         break
 
 def delete_rent():
@@ -181,6 +193,7 @@ def delete_rent():
             return
         else:
             print("❌ Invalid choice. Please select again.")
+
             
 # Admin Sub Menu: Rents Management
 # ------------------------------------

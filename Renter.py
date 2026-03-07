@@ -1,5 +1,5 @@
 from Equipment_Management import lihat_barang_tertentu, lihat_semua_barang
-from Database import alat_outdoor, data_penyewaan
+from Database import get_equipment, update_equipment, add_rental, get_user_rentals, update_rental, update_rental_status, get_last_transaction_id
 
 counter_id_transaksi = 0
 width = 60
@@ -38,8 +38,17 @@ def menu_lihat_barang():
 def buat_penyewaan(userid):
     global counter_id_transaksi # Akses variabel global counter
     
+    # Inisialisasi counter dari database jika masih 0
+    if counter_id_transaksi == 0:
+        last_id = get_last_transaction_id()
+        if last_id and last_id.startswith("arunika"):
+            try:
+                counter_id_transaksi = int(last_id.replace("arunika", ""))
+            except:
+                counter_id_transaksi = 0
+
     while True:
-        transaksi_user = [t for t in data_penyewaan if t["userid"] == userid]
+        transaksi_user = get_user_rentals(userid)
 
         # ================================
         # TEKS ADAPTIF (TAMPILAN)
@@ -81,11 +90,7 @@ def buat_penyewaan(userid):
 
             kode_barang = input("Enter Equipment Code: ")
 
-            barang_dipilih = None
-            for alat in alat_outdoor:
-                if alat["kode"] == kode_barang:
-                    barang_dipilih = alat
-                    break
+            barang_dipilih = get_equipment(kode_barang)
 
             if barang_dipilih is None:
                 print("❌ Equipment not found.")
@@ -160,27 +165,21 @@ def buat_penyewaan(userid):
                     # === LOGIKA ID TRANSAKSI ===
                     # Cek apakah user punya transaksi aktif (barang belum dikembalikan)
                     # Jika punya, pakai ID lama. Jika tidak, buat ID baru.
-                    if transaksi_user:
+                    transaksi_aktif = [t for t in transaksi_user if t['status'] == 'active']
+                    if transaksi_aktif:
                         # Ambil ID dari transaksi sebelumnya (asumsi 1 user 1 ID aktif)
-                        id_transaksi = transaksi_user[0]["id_transaksi"]
+                        id_transaksi = transaksi_aktif[0]["id_transaksi"]
                     else:
                         # Buat ID Baru
                         counter_id_transaksi += 1
                         id_transaksi = f"arunika{counter_id_transaksi:02d}" # Format arunika01, 02...
                     # ============================
 
-                    transaksi = {
-                        "id_transaksi": id_transaksi, # Simpan ID
-                        "userid": userid,
-                        "kode_barang": kode_barang,
-                        "jumlah": jumlah,
-                        "lama_sewa": lama_sewa,
-                        "total_harga": total_harga,
-                        "status" : "active"
-                    }
-
-                    data_penyewaan.append(transaksi)
-                    barang_dipilih["stok"] -= jumlah
+                    add_rental(id_transaksi, userid, kode_barang, jumlah, lama_sewa, total_harga, "active")
+                    # Update stok di DB
+                    new_stok = barang_dipilih["stok"] - jumlah
+                    update_equipment(barang_dipilih['kode'], barang_dipilih['jenis'], barang_dipilih['nama'], barang_dipilih['harga'], new_stok)
+                    
                     print("\n✅ Transaction saved successfully.")
                     display_rentals(userid)
                     break
@@ -204,10 +203,7 @@ def buat_penyewaan(userid):
 
 # Tabel for show data transaction 
 def display_rentals(userid):
-    transaksi_user = [
-                    t for t in data_penyewaan
-                    if t["userid"] == userid and t["status"] == "active"
-                ]
+    transaksi_user = get_user_rentals(userid, "active")
     
     # tampilkan daftar penyewaan
     lebar_kode = 12
@@ -225,7 +221,8 @@ def display_rentals(userid):
 
     # Isi tabel
     for t in transaksi_user:
-        nama = next((a["nama"] for a in alat_outdoor if a["kode"] == t["kode_barang"]), "Unknown")
+        barang = get_equipment(t["kode_barang"])
+        nama = barang["nama"] if barang else "Unknown"
         print(f"│ {t['kode_barang']:^{11}}│ {nama:^{34}}│ {t['jumlah']:^{4}}│ {t['lama_sewa']:^{4}}│ {t['total_harga']:^{14},}│")
 
     # Garis bawah tabel
@@ -241,7 +238,7 @@ def ubah_penyewaan(userid):
         print("=" * width)
 
         print()
-        transaksi_user = [t for t in data_penyewaan if t["userid"] == userid]
+        transaksi_user = get_user_rentals(userid, "active")
 
         # Cek data
         if not transaksi_user:
@@ -282,7 +279,7 @@ def ubah_penyewaan(userid):
         else:
             target_trans = target_list[0]
 
-        alat = next((a for a in alat_outdoor if a["kode"] == target_trans["kode_barang"]), None)
+        alat = get_equipment(target_trans["kode_barang"])
         if not alat:
             print("❌ Related equipment data not found in database.")
             continue
@@ -371,10 +368,11 @@ def ubah_penyewaan(userid):
                 while True:
                     konfirmasi = input("Save changes? (Y/N): ").lower()
                     if konfirmasi == 'y':
-                        target_trans['jumlah'] = new_jumlah
-                        target_trans['lama_sewa'] = new_lama
-                        target_trans['total_harga'] = total_baru
-                        alat['stok'] = stok_baru
+                        # Update rental in DB
+                        update_rental(target_trans['id_transaksi'], userid, target_trans['kode_barang'], new_jumlah, new_lama, total_baru, target_trans['status'])
+                        # Update stok in DB
+                        update_equipment(alat['kode'], alat['jenis'], alat['nama'], alat['harga'], stok_baru)
+                        
                         print("\n✅ Data updated successfully.")
                         display_rentals(userid)
                         break
@@ -411,11 +409,7 @@ def batalkan_penyewaan(userid):
         print("=" * width)
 
         print()
-        # transaksi_user = [t for t in data_penyewaan if t["userid"] == userid]
-        transaksi_user = [
-            t for t in data_penyewaan
-            if t["userid"] == userid and t["status"] == "active"
-        ]
+        transaksi_user = get_user_rentals(userid, "active")
 
         if not transaksi_user:
             print("⚠️   You do not have any rental data.")
@@ -458,10 +452,7 @@ def batalkan_penyewaan(userid):
             target_trans = target_list[0]
 
         # cari alat terkait
-        alat = next(
-            (a for a in alat_outdoor if a["kode"] == target_trans["kode_barang"]),
-            None
-        )
+        alat = get_equipment(target_trans["kode_barang"])
 
         # konfirmasi
         print("\n------- CANCELLATION CONFIRMATION -------")
@@ -477,17 +468,15 @@ def batalkan_penyewaan(userid):
             if konfirmasi == "y":
                 # kembalikan stok
                 if alat:
-                    alat["stok"] += target_trans["jumlah"]
+                    new_stok = alat["stok"] + target_trans["jumlah"]
+                    update_equipment(alat['kode'], alat['jenis'], alat['nama'], alat['harga'], new_stok)
 
-                # hapus data penyewaan
-                # data_penyewaan.remove(target_trans)
-                target_trans["status"] = "cancelled"
+                # update status penyewaan
+                update_rental_status(target_trans['id_transaksi'], userid, target_trans['kode_barang'], "cancelled")
+                
                 print("\n✅ Rental cancelled successfully.")
                 # ambil ulang list yang masih active
-                transaksi_user = [
-                    t for t in data_penyewaan
-                    if t["userid"] == userid and t["status"] == "active"
-                ]
+                transaksi_user = get_user_rentals(userid, "active")
                 if not transaksi_user:
                      print("⚠️ You no longer have any active rentals.")
                 else:
@@ -527,7 +516,7 @@ def pengembalian_barang(userid):
         print("=" * width)
 
         print()
-        transaksi_user = [t for t in data_penyewaan if t["userid"] == userid]
+        transaksi_user = get_user_rentals(userid, "active")
 
         if not transaksi_user:
             print("⚠️   You have no Equipments currently rented.")
@@ -563,7 +552,7 @@ def pengembalian_barang(userid):
         else:
             target_trans = target_list[0]
 
-        alat = next((a for a in alat_outdoor if a["kode"] == target_trans["kode_barang"]), None)
+        alat = get_equipment(target_trans["kode_barang"])
         
         print("\n------- RETURN CONFIRMATION -------")
         print()
@@ -573,14 +562,14 @@ def pengembalian_barang(userid):
         while True:
             konfirmasi = input("Confirm Equipment return? (Y/N): ").lower()
             if konfirmasi == "y":
-                if alat: alat["stok"] += target_trans["jumlah"] # Kembalikan stok
-                # data_penyewaan.remove(target_trans) # Hapus data penyewaan
-                target_trans["status"] = "returned"
+                if alat: 
+                    new_stok = alat["stok"] + target_trans["jumlah"] # Kembalikan stok
+                    update_equipment(alat['kode'], alat['jenis'], alat['nama'], alat['harga'], new_stok)
+                
+                update_rental_status(target_trans['id_transaksi'], userid, target_trans['kode_barang'], "returned")
+                
                 print("\n✅ Equipment returned successfully. Thank you!")
-                transaksi_user = [
-                    t for t in data_penyewaan
-                    if t["userid"] == userid and t["status"] == "active"
-                ]
+                transaksi_user = get_user_rentals(userid, "active")
                 if not transaksi_user:
                      print("⚠️ You no longer have any active rentals.")
                 else:

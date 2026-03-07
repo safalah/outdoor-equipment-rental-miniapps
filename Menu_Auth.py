@@ -1,4 +1,4 @@
-from Database import users
+from Database import check_userid, get_user,create_user
 
 # ==========================================
 # BASIC VALIDATION
@@ -60,10 +60,9 @@ def input_userid():
             print("❌ User Id must contain letters and numbers")
             continue
 
-        for u in users:
-            if u["userid"] == userid:
-                print("❌ User Id already taken")
-                break
+        if check_userid(userid):
+            print("❌ User Id already taken")
+            continue
         else:
             return userid
 
@@ -316,28 +315,25 @@ def register():
         save = input("\nSave Data (Y/N): ").lower()
 
         if save == "y":
-            users.append({
-                "userid": userid,
-                "password": password,
-                "email": email,
-                "role": role,
-                "nama": nama,
-                "gender": gender,
-                "usia": usia,
-                "pekerjaan": pekerjaan,
-                "hobi": hobi_list,
-                "alamat": {
-                    "kota": kota,
-                    "rt": rt,
-                    "rw": rw,
-                    "zipc": zipc
-                },
-                "geo": {
-                    "lat": lat,
-                    "lon": lon
-                },
-                "nohp": nohp
-            })
+            create_user(
+                userid,
+                password,
+                email,
+                role,
+                nama,
+                gender,
+                usia,
+                pekerjaan,
+                ",".join(hobi_list),
+                kota,
+                rt,
+                rw,
+                zipc,
+                lat,
+                lon,
+                nohp
+            )
+
             print("\n✅ Data saved")
             break
 
@@ -354,34 +350,32 @@ def register():
 # ==========================================
 def login():
     percobaan = 0
-    # Loop while untuk percobaan login maksimal 5 kali
+
     while percobaan < 5:
         width = 60
         print("\n" + "=" * width)
         print("LOGIN".center(width))
         print("=" * width)
-        userid_input = input("Enter ID : ") 
+
+        userid_input = input("Enter ID : ")
         password_input = input("Enter Password : ")
-        user_found = False
-        
-        # Cek ID dari database
-        for u in users:
-            if u["userid"] == userid_input:
-                user_found = True
-                # Cek passwordnya
-                if u["password"] == password_input:
-                    print("\n🌿 Login successful. Welcome to Arunika!")
-                    return u
-                else:
-                    # Password salah
-                    percobaan += 1
-                    print(f"Wrong Password (Failed Attempts: {percobaan} times)")
-                    break 
-        # ID tidak terdaftar
-        if not user_found:
+
+        user = get_user(userid_input)
+
+        if user:
+            if user["password"] == password_input:
+                print("\n🌿 Login successful. Welcome to Arunika!")
+                return user
+            else:
+                percobaan += 1
+                print(f"Wrong Password (Failed Attempts: {percobaan} times)")
+        else:
             percobaan += 1
             print(f"ID not registered. (Failed Attempts: {percobaan} times)")
-    # Jika gagal 5 kali
+
     print("You have failed 5 times")
     print("Please select another menu")
     return False
+
+
+

@@ -1,95 +1,293 @@
 # ==========================================
-# DATA STORAGE
+# DATA STORAGE (SQLAlchemy Version)
 # ==========================================
-# Data inisiasi user
-users = [
-    {
-        "userid": "owner01", 
-        "password": "Owner@1234", 
-        "email": "owner1@arunika.com",
-        "role": "Admin",
-        "nama": "Yunita",
-        "gender": "wanita",
-        "usia": 25,
-        "pekerjaan": "Dosen",
-        "hobi": "Mendaki",
-        "alamat": {"kota": "Bogor", "rt": "01", "rw": "01", "zipc": "44323"},
-        "geo": {"lat": "2.9175", "lon": "10.6191"},
-        "nohp": "081234567890"
-    },{
-        "userid": "abdul55", 
-        "password": "User@2024", 
-        "email": "abdulzsz@gmail.com",
-        "role": "Renter",
-        "nama": "Abdul",
-        "gender": "pria",
-        "usia": 20,
-        "pekerjaan": "Mahasiswa",
-        "hobi": "Fotografi",
-        "alamat": {"kota": "Bandung", "rt": "02", "rw": "02", "zipc": "10110"},
-        "geo": {"lat": "3.2088", "lon": "6.8456"},
-        "nohp": "080987654321"
-    }
-]
+from sqlalchemy import create_engine, Column, String, Integer, Float, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-# =====================================================
-# LIST DATA ALAT OUTDOOR ARUNIKA
-# Digunakan untuk:
-# - Menampilkan daftar alat sewa
-# - Pencarian alat berdasarkan kode barang
-# - Harga berlaku untuk sewa 1 hari
-# =====================================================
-alat_outdoor = [
-    # 1. Carrier
-    {"kode": "CARR-1-REI", "jenis": "Carrier", "nama": "Arei Toba Carrier 80L", "harga": 40000, "stok": 7},
-    {"kode": "CARR-2-CON", "jenis": "Carrier", "nama": "Consina Tarebbi Carrier 60L", "harga": 30000, "stok": 5},
-    {"kode": "CARR-3-EIG", "jenis": "Carrier", "nama": "Eiger Streamline 45L", "harga": 35000, "stok": 8},
+# 1. Setup Koneksi ke SQLite
+# File database akan dibuat otomatis bernama 'tugas_project.db' di folder yang sama
+engine = create_engine('sqlite:///tugas_project.db', echo=False)
+Base = declarative_base()
 
-    # 2. Tent
-    {"kode": "TEN-1-2P", "jenis": "Tent", "nama": "Consina 2-Person Tent", "harga": 45000, "stok": 1},
-    {"kode": "TEN-2-4P", "jenis": "Tent", "nama": "Eiger 4-Person Tent", "harga": 60000, "stok": 5},
-    {"kode": "TEN-3-8P", "jenis": "Tent", "nama": "Rei 8-Person Tent", "harga": 70000, "stok": 7},
+# 2. Definisi Model (Tabel)
+class User(Base):
+    __tablename__ = 'users'
+    userid = Column(String, primary_key=True)
+    password = Column(String)
+    email = Column(String)
+    role = Column(String)
+    nama = Column(String)
+    gender = Column(String)
+    usia = Column(Integer)
+    pekerjaan = Column(String)
+    hobi = Column(String)
+    kota = Column(String)
+    rt = Column(Integer)
+    rw = Column(Integer)
+    zipc = Column(Integer)
+    lat = Column(Float)
+    lon = Column(Float)
+    nohp = Column(String)
 
-    # 3. Shoes
-    {"kode": "SPT-1-EIG", "jenis": "Shoes", "nama": "Eiger X-Trek Mountain Shoes", "harga": 35000, "stok": 2},
-    {"kode": "SPT-2-ARE", "jenis": "Shoes", "nama": "Arei Ventura Mountain Shoes", "harga": 30000, "stok": 6},
-    {"kode": "SPT-3-CON", "jenis": "Shoes", "nama": "Consina Alpine Mountain Shoes", "harga": 32000, "stok": 5},
+class Item(Base):
+    __tablename__ = 'items'
+    kode = Column(String, primary_key=True)
+    jenis = Column(String)
+    nama = Column(String)
+    harga = Column(Float)
+    stok = Column(Integer)
 
-    # 4. Sleeping Bag
-    {"kode": "SB-1-ARC", "jenis": "Sleeping Bag", "nama": "Leuser Arctic Sleeping Bag", "harga": 16500, "stok": 6},
-    {"kode": "SB-2-EXP", "jenis": "Sleeping Bag", "nama": "Avtech Explorer Sleeping Bag", "harga": 15000, "stok": 7},
-    {"kode": "SB-3-POL", "jenis": "Sleeping Bag", "nama": "Rei Polar Sleeping Bag", "harga": 18000, "stok": 3},
+class Rental(Base):
+    __tablename__ = 'rentals'
+    # Kita jadikan id_transaksi sebagai Primary Key agar mudah dihandle ORM
+    id_transaksi = Column(String, primary_key=True)
+    userid = Column(String)
+    kode_barang = Column(String)
+    jumlah = Column(Integer)
+    lama_sewa = Column(Integer)
+    total_harga = Column(Float)
+    status = Column(String, default='active')
 
-    # 5. Trekking Pole
-    {"kode": "TP-1-EIG", "jenis": "Trekking Pole", "nama": "Eiger Carbon Trekking Pole", "harga": 10000, "stok": 5},
-    {"kode": "TP-2-CON", "jenis": "Trekking Pole", "nama": "Consina Alpine Trekking Pole", "harga": 10000, "stok": 7},
-    {"kode": "TP-3-REI", "jenis": "Trekking Pole", "nama": "Rei Explorer Trekking Pole", "harga": 10000, "stok": 6},
+# Membuat tabel di database (jika belum ada)
+Base.metadata.create_all(engine)
 
-    # 6. Hydropack
-    {"kode": "HYD-1-EIG", "jenis": "Hydropack", "nama": "Eiger 2L Hydropack", "harga": 15000, "stok": 8},
-    {"kode": "HYD-2-CON", "jenis": "Hydropack", "nama": "Consina 2L Hydropack", "harga": 13000, "stok": 6},
-    {"kode": "HYD-3-REI", "jenis": "Hydropack", "nama": "Rei 3L Hydropack", "harga": 17000, "stok": 5},
+# Membuat Session Factory
+Session = sessionmaker(bind=engine)
 
-    # 7. Jacket
-    {"kode": "JKT-1-EIG", "jenis": "Jacket", "nama": "Eiger Windproof Mountain Jacket", "harga": 25000, "stok": 7},
-    {"kode": "JKT-2-CON", "jenis": "Jacket", "nama": "Consina Mountain Jacket", "harga": 23000, "stok": 6},
-    {"kode": "JKT-3-MTN", "jenis": "Jacket", "nama": "Elfs Mountain Pro Jacket", "harga": 23000, "stok": 5},
+# Helper function: Mengubah object SQLAlchemy menjadi Dictionary
+# Ini penting agar kompatibel dengan kode lama yang mengharapkan return dict
+def model_to_dict(model):
+    if model is None:
+        return None
+    columns = model.__table__.columns.keys()
+    return {c: getattr(model, c) for c in columns}
 
-    # 8. Headlamp
-    {"kode": "HL-1-EIG", "jenis": "Headlamp", "nama": "Eiger X-Light Headlamp", "harga": 10000, "stok": 8},
-    {"kode": "HL-2-CON", "jenis": "Headlamp", "nama": "Consina Beam Headlamp", "harga": 9000, "stok": 6},
-    {"kode": "HL-3-REI", "jenis": "Headlamp", "nama": "Rei Flash Headlamp", "harga": 9000, "stok": 7},
+def models_to_list(models):
+    return [model_to_dict(m) for m in models]
 
-    # 9. Nesting
-    {"kode": "NST-1-EIG", "jenis": "Nesting", "nama": "Eiger Cookset Nesting", "harga": 20000, "stok": 5},
-    {"kode": "NST-2-CON", "jenis": "Nesting", "nama": "Consina Cookware Nesting", "harga": 18000, "stok": 6},
-    {"kode": "NST-3-REI", "jenis": "Nesting", "nama": "Rei Outdoor Set Nesting", "harga": 19000, "stok": 2},
+# ==========================================
+# FUNGSI CRUD (SUDAH Dikonversi)
+# ==========================================
 
-    # 10. Flysheet
-    {"kode": "FLY-1-EIG", "jenis": "Flysheet", "nama": "Eiger 3x4 m Flysheet", "harga": 25000, "stok": 5},
-    {"kode": "FLY-2-CON", "jenis": "Flysheet", "nama": "Consina 3x4 m Flysheet", "harga": 23000, "stok": 6},
-    {"kode": "FLY-3-REI", "jenis": "Flysheet", "nama": "Rei 4x6 m Flysheet", "harga": 30000, "stok": 8},
-]
+def create_user(userid, password, email, role, nama, gender, usia, pekerjaan, hobi, kota, rt, rw, zipc, lat, lon, nohp):
+    """
+    Simpan user baru ke database SQLite.
+    """
+    session = Session()
+    try:
+        hobi_str = hobi  # hobi sudah dikirim sebagai string
+        
+        new_user = User(
+            userid=userid, password=password, email=email, role=role, 
+            nama=nama, gender=gender, usia=usia, pekerjaan=pekerjaan, 
+            hobi=hobi_str, kota=kota, rt=rt, rw=rw, zipc=zipc, 
+            lat=lat, lon=lon, nohp=nohp
+        )
+        session.add(new_user)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
 
+def check_userid(userid):
+    session = Session()
+    try:
+        # .first() mengembalikan object atau None
+        result = session.query(User).filter_by(userid=userid).first()
+        return result is not None
+    finally:
+        session.close()
+    
+def get_user(userid):
+    session = Session()
+    try:
+        result = session.query(User).filter_by(userid=userid).first()
+        return model_to_dict(result)
+    finally:
+        session.close()
 
-data_penyewaan = [] 
+def update_userid(old_userid, new_userid):
+    session = Session()
+    try:
+        # Mengupdate userid yang merupakan Primary Key
+        user = session.query(User).filter_by(userid=old_userid).first()
+        if user:
+            user.userid = new_userid
+            session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def update_password(userid, password):
+    session = Session()
+    try:
+        session.query(User).filter_by(userid=userid).update({"password": password})
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def delete_user(userid):
+    session = Session()
+    try:
+        session.query(User).filter_by(userid=userid).delete()
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def get_all_equipment():
+    session = Session()
+    try:
+        # order_by menggunakan atribut class, bukan string langsung (kecuali pakai col)
+        result = session.query(Item).order_by(Item.jenis.asc()).all()
+        return models_to_list(result)
+    finally:
+        session.close()
+
+def get_equipment(kode):
+    session = Session()
+    try:
+        result = session.query(Item).filter_by(kode=kode).first()
+        return model_to_dict(result)
+    finally:
+        session.close()
+
+def add_equipment(kode, jenis, nama, harga, stok):
+    session = Session()
+    try:
+        new_item = Item(kode=kode, jenis=jenis, nama=nama, harga=harga, stok=stok)
+        session.add(new_item)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def update_equipment(kode, jenis, nama, harga, stok):
+    session = Session()
+    try:
+        session.query(Item).filter_by(kode=kode).update({
+            "jenis": jenis, "nama": nama, "harga": harga, "stok": stok
+        })
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def delete_equipment(kode):
+    session = Session()
+    try:
+        session.query(Item).filter_by(kode=kode).delete()
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def get_all_rentals():
+    session = Session()
+    try:
+        result = session.query(Rental).all()
+        return models_to_list(result)
+    finally:
+        session.close()
+
+def get_rentals_by_status(status):
+    session = Session()
+    try:
+        result = session.query(Rental).filter_by(status=status).all()
+        return models_to_list(result)
+    finally:
+        session.close()
+
+def get_user_rentals(userid, status=None):
+    session = Session()
+    try:
+        query = session.query(Rental).filter_by(userid=userid)
+        if status:
+            query = query.filter_by(status=status)
+        result = query.all()
+        return models_to_list(result)
+    finally:
+        session.close()
+
+def add_rental(id_transaksi, userid, kode_barang, jumlah, lama_sewa, total_harga, status='active'):
+    session = Session()
+    try:
+        new_rental = Rental(
+            id_transaksi=id_transaksi, userid=userid, kode_barang=kode_barang,
+            jumlah=jumlah, lama_sewa=lama_sewa, total_harga=total_harga, status=status
+        )
+        session.add(new_rental)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def update_rental(id_transaksi, userid, kode_barang, jumlah, lama_sewa, total_harga, status):
+    session = Session()
+    try:
+        # Karena id_transaksi adalah Primary Key, kita filter by itu lalu update
+        # (Asumsi id_transaksi unik global. Jika komposit, logika filter harus disesuaikan)
+        session.query(Rental).filter_by(id_transaksi=id_transaksi).update({
+            "jumlah": jumlah, "lama_sewa": lama_sewa, 
+            "total_harga": total_harga, "status": status
+        })
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def update_rental_status(id_transaksi, userid, kode_barang, status):
+    session = Session()
+    try:
+        session.query(Rental).filter_by(id_transaksi=id_transaksi).update({
+            "status": status
+        })
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def delete_rental(id_transaksi, userid, kode_barang):
+    session = Session()
+    try:
+        # Filter berdasarkan PK id_transaksi sudah cukup untuk delete unik
+        session.query(Rental).filter_by(id_transaksi=id_transaksi).delete()
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+def get_last_transaction_id():
+    session = Session()
+    try:
+        # ORDER BY DESC LIMIT 1
+        result = session.query(Rental).order_by(Rental.id_transaksi.desc()).first()
+        if result:
+            return result.id_transaksi
+        return None
+    finally:
+        session.close()

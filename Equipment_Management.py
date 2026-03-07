@@ -1,4 +1,4 @@
-from Database import alat_outdoor
+from Database import get_all_equipment, get_equipment, add_equipment, update_equipment, delete_equipment
 from Menu_Auth import is_alpha, is_int
 #---------------------------------------
 width = 60 
@@ -11,6 +11,7 @@ lebar_stok = 12
 
 # lihat semua barang 
 def lihat_semua_barang():
+    alat_outdoor = get_all_equipment()
     if not alat_outdoor:
         print("📭  Equipment list is still empty")
         return
@@ -34,32 +35,27 @@ def lihat_semua_barang():
     
 # lihat barang berdasarkan input user (kode barang)
 def lihat_barang_tertentu():
-    if not alat_outdoor:
-        print("📭 Equipment list is still empty")
-        return
-
     kode = input("Enter Equipment code: ").upper()
+    barang = get_equipment(kode)
 
-    for barang in alat_outdoor:
-        if barang["kode"] == kode:
-            print("\n" + "=" * 111)
-            print("🌿 ARUNIKA OUTDOOR RENTAL 🌿".center(111))
-            print("RENTAL EQUIPMENT LIST • 1 DAY".center(111))
-            print("=" * 111)
+    if barang:
+        print("\n" + "=" * 111)
+        print("🌿 ARUNIKA OUTDOOR RENTAL 🌿".center(111))
+        print("RENTAL EQUIPMENT LIST • 1 DAY".center(111))
+        print("=" * 111)
 
-            print(f"┌{'─'*lebar_kode}┬{'─'*lebar_jenis}┬{'─'*lebar_nama}┬{'─'*lebar_harga}┬{'─'*lebar_stok}┐")
-            print(f"│ {'Code':<{lebar_kode-1}}│ {'Equipment Type':<{lebar_jenis-1}}│ {'Equipment Name':<{lebar_nama-1}}│ {'Price (Rp)':<{lebar_harga-1}}│ {'Stock (pcs)':<{lebar_stok-1}}│")
-            print(f"├{'─'*lebar_kode}┼{'─'*lebar_jenis}┼{'─'*lebar_nama}┼{'─'*lebar_harga}┼{'─'*lebar_stok}┤")
+        print(f"┌{'─'*lebar_kode}┬{'─'*lebar_jenis}┬{'─'*lebar_nama}┬{'─'*lebar_harga}┬{'─'*lebar_stok}┐")
+        print(f"│ {'Code':<{lebar_kode-1}}│ {'Equipment Type':<{lebar_jenis-1}}│ {'Equipment Name':<{lebar_nama-1}}│ {'Price (Rp)':<{lebar_harga-1}}│ {'Stock (pcs)':<{lebar_stok-1}}│")
+        print(f"├{'─'*lebar_kode}┼{'─'*lebar_jenis}┼{'─'*lebar_nama}┼{'─'*lebar_harga}┼{'─'*lebar_stok}┤")
 
-            # Isi tabel
-            print(f"│ {barang['kode']:<{lebar_kode-1}}│ {barang['jenis']:<{lebar_jenis-1}}│ {barang['nama']:<{lebar_nama-1}}│ {barang['harga']:<{lebar_harga-1},}│ {barang['stok']:<{lebar_stok-1}}│")
+        # Isi tabel
+        print(f"│ {barang['kode']:<{lebar_kode-1}}│ {barang['jenis']:<{lebar_jenis-1}}│ {barang['nama']:<{lebar_nama-1}}│ {barang['harga']:<{lebar_harga-1},}│ {barang['stok']:<{lebar_stok-1}}│")
 
-            # Footer tabel
-            print(f"└{'─'*lebar_kode}┴{'─'*lebar_jenis}┴{'─'*lebar_nama}┴{'─'*lebar_harga}┴{'─'*lebar_stok}┘")
+        # Footer tabel
+        print(f"└{'─'*lebar_kode}┴{'─'*lebar_jenis}┴{'─'*lebar_nama}┴{'─'*lebar_harga}┴{'─'*lebar_stok}┘")
 
-            return
-
-    print("❌ Equipment with that code not found")
+    else:
+        print("❌ Equipment with that code not found")
 
 
 
@@ -80,13 +76,7 @@ def menu_add_barang():
                 continue
             
             # Cek duplikat
-            duplikat = False
-            for Equipment in alat_outdoor:
-                if Equipment['kode'] == kode:
-                    duplikat = True
-                    break
-            
-            if duplikat:
+            if get_equipment(kode):
                 print("❌ Equipment code already used. Use another code.")
                 continue
             break
@@ -144,15 +134,7 @@ def menu_add_barang():
         while True:
             konfirmasi = input("\nSave this Equipment data? (Y/N): ").lower()
             if konfirmasi == 'y':
-                alat_outdoor.append({
-                    "kode": kode,
-                    "jenis": jenis,
-                    "nama": nama,
-                    "harga": harga,
-                    "stok": stok
-                })
-                # Urutkan berdasarkan jenis (alphabetically)
-                alat_outdoor.sort(key=lambda x: x['jenis'])
+                add_equipment(kode, jenis, nama, harga, stok)
                 print("\n✅ Equipment added successfully.")
                 break
             elif konfirmasi == 'n':
@@ -190,11 +172,7 @@ def menu_update_barang():
             return
             
         # Cari barang
-        barang_target = None
-        for Equipment in alat_outdoor:
-            if Equipment['kode'] == kode_input:
-                barang_target = Equipment
-                break
+        barang_target = get_equipment(kode_input)
         
         if not barang_target:
             print("❌ Equipment code not found.")
@@ -217,6 +195,11 @@ def menu_update_barang():
         
         updated = False
         
+        new_nama = barang_target['nama']
+        new_jenis = barang_target['jenis']
+        new_harga = barang_target['harga']
+        new_stok = barang_target['stok']
+
         if pilih == '1':
             while True:
                 baru = input(f"Enter New Name [{barang_target['nama']}]: ")
@@ -226,7 +209,7 @@ def menu_update_barang():
                 if baru == barang_target['nama']:
                     print("❌ The name is already the same as the previous value. Please enter a different name.")
                     continue
-                barang_target['nama'] = baru
+                new_nama = baru
                 updated = True
                 break
                 
@@ -239,8 +222,7 @@ def menu_update_barang():
                 if baru == barang_target['nama']:
                     print("❌ The type is already the same as the previous value. Please enter a different name.")
                     continue
-                barang_target['jenis'] = baru
-                
+                new_jenis = baru
                 updated = True
                 break
                 
@@ -251,13 +233,13 @@ def menu_update_barang():
                     print("❌ Price must be a number.")
                     continue
                 harga_baru = int(baru_str)
-                if harga_baru == barang_target['stok']:
+                if harga_baru == barang_target['harga']:
                     print("❌ The price is already the same as the previous value. Please enter a different value.")
                     continue
                 if harga_baru <= 0:
                     print("❌ Price must be greater than 0.")
                     continue
-                barang_target['harga'] = harga_baru
+                new_harga = harga_baru
                 updated = True
                 break
                 
@@ -274,7 +256,7 @@ def menu_update_barang():
                 if stok_baru < 0:
                     print("❌ Stock cannot be negative.")
                     continue
-                barang_target['stok'] = stok_baru
+                new_stok = stok_baru
                 updated = True
                 break
                 
@@ -286,6 +268,7 @@ def menu_update_barang():
             continue
             
         if updated:
+            update_equipment(kode_input, new_jenis, new_nama, new_harga, new_stok)
             print("\n✅ Equipment data updated successfully.")
             
         # Menu lanjutan
@@ -345,7 +328,7 @@ def menu_delete_barang():
 
         print()
         # Cek jika data barang kosong
-        if not alat_outdoor:
+        if not get_all_equipment():
             print("⚠️  Equipment list is currently empty.")
             print("ℹ️  Please add Equipments first in the 'Add Equipments' menu.")
             input("\nPress Enter to return...")
@@ -362,12 +345,8 @@ def menu_delete_barang():
             print("❌ Equipment code cannot be empty.")
             continue
 
-        # Mencari barang dalam list global
-        target_barang = None
-        for barang in alat_outdoor:
-            if barang["kode"] == kode_input:
-                target_barang = barang
-                break
+        # Mencari barang
+        target_barang = get_equipment(kode_input)
         
         # Validasi apakah barang dEquipmentukan
         if not target_barang:
@@ -387,7 +366,7 @@ def menu_delete_barang():
             konfirmasi = input("\nAre you sure you want to DELETE this Equipment? (Y/N): ").lower()
 
             if konfirmasi == 'y':
-                alat_outdoor.remove(target_barang)
+                delete_equipment(kode_input)
                 print("\n✅ Equipment deleted successfully from the database.")
                 break
                 
@@ -397,6 +376,23 @@ def menu_delete_barang():
                 
             else:
                 print("❌ Invalid input! Please enter 'Y' or 'N'.")
+
+        # Menu Lanjutan (Looping)
+        print("\n------- Admin Options -------")
+        print()
+        print("1. Delete Another Equipment")
+        print("0. Back to Admin Menu")
+        
+        lanjut = input("Select option (0-1): ")
+        
+        if lanjut == "1":
+            continue  # Kembali ke awal loop
+        elif lanjut == "0":
+            return   # Keluar fungsi
+        else:
+            print("❌ Invalid choice. Returning to Admin Menu...")
+            return
+
 
         # Menu Lanjutan (Looping)
         print("\n------- Admin Options -------")
