@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <title>My Profile - Arunika Outdoor</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+      }
+      .profile-item {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+      .label {
+        font-weight: bold;
+        width: 150px;
+        display: inline-block;
+      }
+      .btn-back {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 15px;
+      }
+      .actions {
+        margin-top: 20px;
+      }
+      .btn-danger {
+        background-color: #f44336;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .btn-update {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 13px;
+    }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>👤 MY PERSONAL DATA</h1>
+      <div class="profile-item">
+        <span class="label">UserID:</span> {{ user.userid }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Name:</span> {{ user.nama }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Email:</span> {{ user.email }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Gender:</span> {{ user.gender }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Age:</span> {{ user.usia }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Job:</span> {{ user.pekerjaan }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Hobbies:</span> {{ user.hobi }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Phone No:</span> {{ user.nohp }}
+      </div>
+      <h3>Address</h3>
+      <div class="profile-item">
+        <span class="label">City:</span> {{ user.kota }}
+      </div>
+      <div class="profile-item">
+        <span class="label">RT/RW:</span> {{ user.rt }}/{{ user.rw }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Zip Code:</span> {{ user.zipc }}
+      </div>
+      <h3>Coordinates</h3>
+      <div class="profile-item">
+        <span class="label">Lat:</span> {{ user.lat }}
+      </div>
+      <div class="profile-item">
+        <span class="label">Lon:</span> {{ user.lon }}
+      </div>
+
+      <div class="actions">
+        <h3>Account Menu</h3>
+
+        <a href="/user/profile/update" class="btn-update">
+          Update Data (UserID & Password)
+        </a>
+
+        <form
+          action="/user/profile/delete"
+          method="post"
+          onsubmit="
+            return confirm(
+              'WARNING: Account will be deleted permanently! Are you sure?',
+            );
+          "
+          style="display: inline"
+        >
+          <button type="submit" class="btn-danger">Delete Account</button>
+        </form>
+      </div>
+
+      <a href="/user" class="btn-back">Back to Menu</a>
+    </div>
+  </body>
+</html>

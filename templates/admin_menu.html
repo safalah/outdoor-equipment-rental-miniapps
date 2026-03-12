@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <title>Admin Menu - Arunika Outdoor</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #E6EFE6, #C9DCC2, #B7CDA7);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .menu-container {
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #1976d2;
+    }
+
+    .btn-logout {
+      background-color: #f44336;
+    }
+
+    .btn-logout:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<div class="menu-container">
+
+<h1>🌿 ARUNIKA OUTDOOR 🏕️</h1>
+<p>Explore the peaks, gear up with us!</p>
+<hr>
+
+<h2>Admin Menu</h2>
+
+<form action="/admin/equipment" method="get">
+  <button type="submit">[1] Equipment Management</button>
+</form>
+
+<form action="/admin/rents" method="get">
+  <button type="submit">[2] Rents Management</button>
+</form>
+
+<form action="/" method="get">
+  <button type="submit" class="btn-logout">[0] Logout</button>
+</form>
+
+</div>
+
+</body>
+</html>

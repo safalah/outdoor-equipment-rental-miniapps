@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cancel Rental - Arunika Outdoor</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #333; color: white; }
+        button { padding: 8px 12px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-back { margin-top: 20px; display: inline-block; padding: 10px 15px; background-color: #333; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ CANCEL RENTAL DATA</h1>
+
+        {% if active_rentals %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Qty</th>
+                    <th>Days</th>
+                    <th>Total (Rp)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in active_rentals %}
+                <tr>
+                    <td>{{ t.kode_barang }}</td>
+                    <td>{{ t.jumlah }}</td>
+                    <td>{{ t.lama_sewa }}</td>
+                    <td>{{ "{:,.0f}".format(t.total_harga) }}</td>
+                    <td>
+                        <form action="/user/rental/cancel" method="post" onsubmit="return confirm('Are you sure you want to cancel this rental?');">
+                            <input type="hidden" name="id_transaksi" value="{{ t.id_transaksi }}">
+                            <input type="hidden" name="kode_barang" value="{{ t.kode_barang }}">
+                            <button type="submit">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>⚠️ You do not have any active rental data.</p>
+        {% endif %}
+
+        <br>
+        <a href="/user" class="btn-back">Back to Menu</a>
+    </div>
+</body>
+</html>

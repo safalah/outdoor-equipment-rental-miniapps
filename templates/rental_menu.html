@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Renter Menu - Arunika Outdoor</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #E6EFE6, #C9DCC2, #B7CDA7);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .menu-container {
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+
+      h1 {
+        margin-bottom: 5px;
+        font-size: 24px;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #555;
+      }
+
+      hr {
+        margin: 15px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+      }
+
+      h2 {
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 6px;
+        border: none;
+        background: #4CAF50; /* hijau utama */
+        color: white;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #43A047; /* hijau hover lebih gelap */
+      }
+
+      .btn-back {
+        background: #555; /* back tetap abu gelap */
+        color: white;
+      }
+
+      .btn-back:hover {
+        background: #333;
+      }
+
+      .btn-logout {
+        background: #E53935; /* merah lembut */
+        color: white;
+      }
+
+      .btn-logout:hover {
+        background: #D32F2F;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="menu-container">
+      <h1>🌿 ARUNIKA OUTDOOR 🏕️</h1>
+      <p>Explore the peaks, gear up with us!</p>
+      <hr />
+      <h2>Renter Menu</h2>
+
+      <form action="/user/equipment" method="get">
+        <button type="submit">[1] View Equipment List</button>
+      </form>
+      <form action="/user/rental/create" method="get">
+        <button type="submit">[2] Create Rental</button>
+      </form>
+      <form action="/user/rental/update" method="get">
+        <button type="submit">[3] Update Rental</button>
+      </form>
+      <form action="/user/rental/cancel" method="get">
+        <button type="submit">[4] Cancel Rental</button>
+      </form>
+      <form action="/user/rental/return" method="get">
+        <button type="submit">[5] Return Equipment</button>
+      </form>
+      <form action="/user/invoice" method="get">
+        <button type="submit">[6] View Invoice</button>
+      </form>
+      <form action="/user/profile" method="get">
+        <button type="submit">[7] View Personal Data</button>
+      </form>
+      <form action="/" method="get">
+        <button type="submit" class="btn-back">[0] Back</button>
+      </form>
+      <form action="/logout" method="get">
+        <button type="submit" class="btn-logout">Logout</button>
+      </form>
+    </div>
+  </body>
+</html>

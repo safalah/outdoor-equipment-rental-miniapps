@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+<title>Update Personal Data - Arunika Outdoor</title>
+
+<style>
+body{
+  font-family:sans-serif;
+  margin:20px;
+}
+
+.container{
+  max-width:600px;
+  margin:auto;
+  border:1px solid #ddd;
+  padding:20px;
+  border-radius:10px;
+  background:#f9f9f9;
+}
+
+.menu-item{
+  margin:15px 0;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.btn{
+  padding:8px 12px;
+  background:#333;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.btn-back{
+  margin-top:20px;
+  display:inline-block;
+  padding:10px 15px;
+  background:#555;
+  color:white;
+  text-decoration:none;
+  border-radius:5px;
+}
+
+input{
+  padding:6px;
+  margin-top:5px;
+  width:100%;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>UPDATE PERSONAL DATA</h1>
+
+<h3>Data that can be changed:</h3>
+
+<div class="menu-item">
+<span class="label">1. UserID :</span> {{ user.userid }}
+</div>
+
+<div class="menu-item">
+<span class="label">2. Password :</span> ********
+</div>
+
+<hr>
+
+<h3>Select data to change</h3>
+
+<!-- UPDATE USERID -->
+<form action="/user/profile/update_userid" method="post">
+
+<label>Enter New UserID</label>
+<input type="text" name="new_userid" required>
+
+<br><br>
+
+<button class="btn">Update UserID</button>
+
+</form>
+
+<br>
+
+<!-- UPDATE PASSWORD -->
+<form action="/user/profile/update_password" method="post">
+
+<label>Enter New Password</label>
+<input type="password" name="new_password" required>
+
+<br><br>
+
+<button class="btn">Update Password</button>
+
+</form>
+
+<br>
+
+<a href="/user/profile" class="btn-back">Back</a>
+
+</div>
+
+</body>
+</html>

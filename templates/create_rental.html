@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Create Rental - Arunika Outdoor</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .error {
+        color: red;
+        margin-bottom: 15px;
+      }
+      .info {
+        background-color: #e7f3fe;
+        padding: 10px;
+        border-left: 6px solid #2196f3;
+        margin-bottom: 15px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #333;
+        color: white;
+      }
+      .btn-back {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>💰 CREATE RENTAL</h1>
+
+      <div class="info">{{ info_user }}</div>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %} {% if confirm_data %}
+      <div style="background: #f9f9f9; padding: 15px; border: 1px solid #ccc">
+        <h3>------- Rental Confirmation -------</h3>
+        <p>Equipment: {{ confirm_data.nama }}</p>
+        <p>Quantity: {{ confirm_data.jumlah }}</p>
+        <p>Duration: {{ confirm_data.lama_sewa }} days</p>
+        <p>Total Price: Rp {{ "{:,.0f}".format(confirm_data.total_harga) }}</p>
+
+        <form action="/user/rental/create" method="post">
+          <input
+            type="hidden"
+            name="kode_barang"
+            value="{{ confirm_data.kode_barang }}"
+          />
+          <input
+            type="hidden"
+            name="jumlah"
+            value="{{ confirm_data.jumlah }}"
+          />
+          <input
+            type="hidden"
+            name="lama_sewa"
+            value="{{ confirm_data.lama_sewa }}"
+          />
+          <input type="hidden" name="confirm" value="yes" />
+          <button type="submit">Proceed with Rental</button>
+          <a href="/user/rental/create" style="margin-left: 10px">Cancel</a>
+        </form>
+      </div>
+      {% else %}
+      <form action="/user/rental/create" method="post">
+        <div class="form-group">
+          <label>Equipment Code:</label>
+          <input
+            type="text"
+            name="kode_barang"
+            required
+            placeholder="e.g. T01"
+          />
+        </div>
+        <div class="form-group">
+          <label>Quantity:</label>
+          <input type="number" name="jumlah" min="1" required />
+        </div>
+        <div class="form-group">
+          <label>Rental Duration (days):</label>
+          <input type="number" name="lama_sewa" min="1" required />
+        </div>
+        <button type="submit">Check Price</button>
+      </form>
+      {% endif %} {% if active_rentals %}
+      <h3>Your Active Rentals</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Qty</th>
+            <th>Days</th>
+            <th>Total (Rp)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in active_rentals %}
+          <tr>
+            <td>{{ t.kode_barang }}</td>
+            <td>{{ t.jumlah }}</td>
+            <td>{{ t.lama_sewa }}</td>
+            <td>{{ "{:,.0f}".format(t.total_harga) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      <br />
+      <a href="/user" class="btn-back">Back to Menu</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Equipment List - Arunika Outdoor</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      .header {
+        text-align: center;
+      }
+      .btn-back {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🌿 ARUNIKA OUTDOOR RENTAL 🌿</h1>
+      <h3>RENTAL EQUIPMENT LIST • 1 DAY</h3>
+    </div>
+    <hr />
+
+    <form action="/user/equipment" method="get">
+      <input
+        type="text"
+        name="search"
+        placeholder="Search by code..."
+        value="{{ search_query }}"
+      />
+      <button type="submit">Search</button>
+      <a href="/user/equipment">Clear</a>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Equipment Type</th>
+          <th>Equipment Name</th>
+          <th>Price (Rp)</th>
+          <th>Stock (pcs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in equipments %}
+        <tr>
+          <td>{{ item.kode }}</td>
+          <td>{{ item.jenis }}</td>
+          <td>{{ item.nama }}</td>
+          <td>{{ "{:,.0f}".format(item.harga) }}</td>
+          <td>{{ item.stok }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center">No equipment found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if role == "admin" %}
+    <a href="/admin" class="btn-back">Back to Admin Menu</a>
+    {% else %}
+    <a href="/user" class="btn-back">Back to Menu</a>
+    {% endif %}
+  </body>
+</html>

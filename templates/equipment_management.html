@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+<title>Equipment Management - Arunika Outdoor</title>
+
+<style>
+
+body {
+font-family: sans-serif;
+margin: 0;
+padding: 20px;
+background: linear-gradient(135deg, #E6EFE6, #C9DCC2, #B7CDA7);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.menu-container {
+max-width: 400px;
+width: 100%;
+text-align: center;
+background-color: rgba(255, 255, 255, 0.9);
+padding: 30px;
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+button{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+cursor:pointer;
+background-color:#2196f3;
+color:white;
+border:none;
+border-radius:5px;
+font-size:16px;
+}
+
+button:hover{
+background-color:#1976d2;
+}
+
+.btn-back{
+background-color:#333;
+}
+
+.btn-delete{
+background-color:#f44336;
+}
+
+.btn-delete:hover{
+background-color:#d32f2f;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#2196f3;
+color:white;
+}
+
+input{
+width:100%;
+padding:8px;
+margin-bottom:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="menu-container">
+
+<h1>🌿 ARUNIKA OUTDOOR 🏕️</h1>
+<p>Admin Equipment Control Panel</p>
+<hr>
+
+<h2>Equipment Management</h2>
+
+<!-- ================= MENU ================= -->
+
+{% if mode == "menu" %}
+
+<form action="/admin/equipment/view">
+<button>[1] View Equipment</button>
+</form>
+
+<form action="/admin/equipment">
+<button name="mode" value="add">[2] Add Equipment</button>
+</form>
+
+<form action="/admin/equipment">
+<button name="mode" value="update">[3] Update Equipment</button>
+</form>
+
+<form action="/admin/equipment">
+<button name="mode" value="delete">[4] Delete Equipment</button>
+</form>
+
+<form action="/admin">
+<button class="btn-back">[0] Back</button>
+</form>
+
+{% endif %}
+
+<!-- ================= VIEW ================= -->
+
+{% if mode == "view" %}
+
+<h3>Equipment List</h3>
+
+<table>
+
+<tr>
+<th>Code</th>
+<th>Type</th>
+<th>Name</th>
+<th>Price</th>
+<th>Stock</th>
+</tr>
+
+{% for e in equipments %}
+
+<tr>
+<td>{{e.kode}}</td>
+<td>{{e.jenis}}</td>
+<td>{{e.nama}}</td>
+<td>Rp {{e.harga}}</td>
+<td>{{e.stok}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<br>
+
+<form action="/admin/equipment">
+<button class="btn-back">Back</button>
+</form>
+
+{% endif %}
+
+<!-- ================= ADD ================= -->
+
+{% if mode == "add" %}
+
+<h3>Add New Equipment</h3>
+
+<form method="POST" action="/admin/equipment/add">
+
+<input name="kode" placeholder="Equipment Code">
+
+<input name="jenis" placeholder="Equipment Type">
+
+<input name="nama" placeholder="Equipment Name">
+
+<input name="harga" placeholder="Price">
+
+<input name="stok" placeholder="Stock">
+
+<button type="submit">Save Equipment</button>
+
+</form>
+
+<form action="/admin/equipment">
+<button class="btn-back">Back</button>
+</form>
+
+{% endif %}
+
+<!-- ================= UPDATE ================= -->
+
+{% if mode == "update" %}
+
+<h3>Update Equipment</h3>
+
+<form method="POST" action="/admin/equipment/update">
+
+<input name="kode" placeholder="Equipment Code">
+
+<input name="jenis" placeholder="New Type">
+
+<input name="nama" placeholder="New Name">
+
+<input name="harga" placeholder="New Price">
+
+<input name="stok" placeholder="New Stock">
+
+<button type="submit">Update Equipment</button>
+
+</form>
+
+<form action="/admin/equipment">
+<button class="btn-back">Back</button>
+</form>
+
+{% endif %}
+
+<!-- ================= DELETE ================= -->
+
+{% if mode == "delete" %}
+
+<h3>Delete Equipment</h3>
+
+<form method="POST" action="/admin/equipment/delete">
+
+<input name="kode" placeholder="Equipment Code">
+
+<button type="submit" class="btn-delete">Delete Equipment</button>
+
+</form>
+
+<form action="/admin/equipment">
+<button class="btn-back">Back</button>
+</form>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>

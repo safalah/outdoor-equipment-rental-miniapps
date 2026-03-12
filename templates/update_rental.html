@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Update Rental - Arunika Outdoor</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #333;
+        color: white;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .error {
+        color: red;
+        margin-bottom: 15px;
+      }
+      .btn-back {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>✏️ UPDATE RENTAL DATA</h1>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %} {% if target_trans %}
+      <h3>Updating Rental: {{ target_trans.kode_barang }}</h3>
+      <form action="/user/rental/update" method="post">
+        <input
+          type="hidden"
+          name="id_transaksi"
+          value="{{ target_trans.id_transaksi }}"
+        />
+        <input
+          type="hidden"
+          name="kode_barang"
+          value="{{ target_trans.kode_barang }}"
+        />
+
+        <div class="form-group">
+          <label>New Quantity (Current: {{ target_trans.jumlah }}):</label>
+          <input
+            type="number"
+            name="new_jumlah"
+            value="{{ target_trans.jumlah }}"
+            min="1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label
+            >New Duration (Current: {{ target_trans.lama_sewa }} days):</label
+          >
+          <input
+            type="number"
+            name="new_lama"
+            value="{{ target_trans.lama_sewa }}"
+            min="1"
+            required
+          />
+        </div>
+
+        <button type="submit" name="action" value="save">Save Changes</button>
+        <a href="/user/rental/update" style="margin-left: 10px">Cancel</a>
+      </form>
+      {% else %} {% if active_rentals %}
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Qty</th>
+            <th>Days</th>
+            <th>Total (Rp)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in active_rentals %}
+          <tr>
+            <td>{{ t.kode_barang }}</td>
+            <td>{{ t.jumlah }}</td>
+            <td>{{ t.lama_sewa }}</td>
+            <td>{{ "{:,.0f}".format(t.total_harga) }}</td>
+            <td>
+              <form
+                action="/user/rental/update"
+                method="post"
+                style="display: inline"
+              >
+                <input
+                  type="hidden"
+                  name="id_transaksi"
+                  value="{{ t.id_transaksi }}"
+                />
+                <input
+                  type="hidden"
+                  name="kode_barang"
+                  value="{{ t.kode_barang }}"
+                />
+                <button type="submit" name="action" value="edit">Edit</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>⚠️ You do not have any rental data to update.</p>
+      {% endif %} {% endif %}
+
+      <br />
+      <a href="/user" class="btn-back">Back to Menu</a>
+    </div>
+  </body>
+</html>

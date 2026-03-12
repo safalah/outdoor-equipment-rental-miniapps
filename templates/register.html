@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register - Arunika Outdoor</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #E6EFE6, #C9DCC2, #B7CDA7);
+  display:flex;
+  justify-content:center;
+  padding:40px;
+}
+
+.container{
+  background:white;
+  padding:40px;
+  border-radius:12px;
+  width:420px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+label{
+  font-weight:bold;
+  display:block;
+  margin-top:10px;
+}
+
+input,select{
+  width:100%;
+  padding:8px;
+  margin-top:5px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  box-sizing: border-box;
+}
+
+.error-msg {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  min-height: 15px;
+  font-weight: normal;
+}
+
+input.invalid, select.invalid {
+  border-color: #d32f2f;
+  background-color: #fff8f8;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:20px;
+  border:none;
+  border-radius:6px;
+  background:#F57C00;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#EF6C00;
+}
+
+.back{
+  display:block;
+  text-align:center;
+  margin-top:15px;
+  text-decoration:none;
+  color:#555;
+}
+
+.server-error {
+  color: white;
+  background: #d32f2f;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🌿 Register</h1>
+
+{% if error %}
+<div class="server-error">❌ {{ error }}</div>
+{% endif %}
+
+<form id="regForm" method="post">
+
+<label>UserID</label>
+<input id="userid" name="userid" type="text" value="{{ form_data.userid if form_data else '' }}" required>
+<span id="error-userid" class="error-msg"></span>
+
+<label>Password</label>
+<input id="password" name="password" type="password" required>
+<span id="error-password" class="error-msg"></span>
+
+<label>Email</label>
+<input id="email" name="email" type="email" value="{{ form_data.email if form_data else '' }}" required>
+<span id="error-email" class="error-msg"></span>
+
+<label>Role</label>
+<select id="role" name="role">
+<option value="admin" {{ 'selected' if form_data and form_data.role == 'admin' else '' }}>Admin</option>
+<option value="renter" {{ 'selected' if form_data and form_data.role == 'renter' else '' }}>Renter</option>
+</select>
+<span id="error-role" class="error-msg"></span>
+
+<label>Name</label>
+<input id="nama" name="nama" type="text" value="{{ form_data.nama if form_data else '' }}" required>
+<span id="error-nama" class="error-msg"></span>
+
+<label>Gender</label>
+<select id="gender" name="gender">
+<option value="male" {{ 'selected' if form_data and form_data.gender == 'male' else '' }}>Male</option>
+<option value="female" {{ 'selected' if form_data and form_data.gender == 'female' else '' }}>Female</option>
+</select>
+<span id="error-gender" class="error-msg"></span>
+
+<label>Age</label>
+<input id="usia" name="usia" type="number" value="{{ form_data.usia if form_data else '' }}" required>
+<span id="error-usia" class="error-msg"></span>
+
+<label>Job</label>
+<input id="pekerjaan" name="pekerjaan" type="text" value="{{ form_data.pekerjaan if form_data else '' }}" required>
+<span id="error-pekerjaan" class="error-msg"></span>
+
+<label>Hobbies</label>
+<input id="hobi" name="hobi" type="text" placeholder="reading, swimming, gaming" value="{{ form_data.hobi if form_data else '' }}" required>
+<span id="error-hobi" class="error-msg"></span>
+
+<label>City</label>
+<input id="kota" name="kota" type="text" value="{{ form_data.kota if form_data else '' }}" required>
+<span id="error-kota" class="error-msg"></span>
+
+<label>RT</label>
+<input id="rt" name="rt" type="number" value="{{ form_data.rt if form_data else '' }}" required>
+<span id="error-rt" class="error-msg"></span>
+
+<label>RW</label>
+<input id="rw" name="rw" type="number" value="{{ form_data.rw if form_data else '' }}" required>
+<span id="error-rw" class="error-msg"></span>
+
+<label>Zip Code</label>
+<input id="zipc" name="zipc" type="number" value="{{ form_data.zipc if form_data else '' }}" required>
+<span id="error-zipc" class="error-msg"></span>
+
+<label>Latitude</label>
+<input id="lat" name="lat" type="text" value="{{ form_data.lat if form_data else '' }}" required>
+<span id="error-lat" class="error-msg"></span>
+
+<label>Longitude</label>
+<input id="lon" name="lon" type="text" value="{{ form_data.lon if form_data else '' }}" required>
+<span id="error-lon" class="error-msg"></span>
+
+<label>Phone Number</label>
+<input id="nohp" name="nohp" type="number" value="{{ form_data.nohp if form_data else '' }}" required>
+<span id="error-nohp" class="error-msg"></span>
+
+<button type="submit">Register</button>
+
+</form>
+
+<a class="back" href="{{ url_for('menu_awal') }}">Back</a>
+
+</div>
+
+<script>
+const form = document.getElementById('regForm');
+const fields = [
+  'userid', 'password', 'email', 'role', 'nama', 'gender', 'usia', 
+  'pekerjaan', 'hobi', 'kota', 'rt', 'rw', 'zipc', 'lat', 'lon', 'nohp'
+];
+
+async function validate(fieldId, value) {
+  if (value === "" && fieldId !== 'role' && fieldId !== 'gender') return "Field cannot be empty";
+
+  switch(fieldId) {
+    case 'userid':
+      if (value.length < 6 || value.length > 20) return "Must be 6-20 characters";
+      if (!/^[a-zA-Z0-9]+$/.test(value)) return "Only letters and numbers allowed";
+      if (!(/[a-zA-Z]/.test(value) && /[0-9]/.test(value))) return "Must contain both letters and numbers";
+      const response = await fetch(`/check_userid?userid=${value}`);
+      const data = await response.json();
+      if (data.exists) return "User Id already taken";
+      break;
+    
+    case 'password':
+      if (value.length < 8) return "Min 8 characters";
+      if (!(/[A-Z]/.test(value))) return "Must contain uppercase";
+      if (!(/[a-z]/.test(value))) return "Must contain lowercase";
+      if (!(/[0-9]/.test(value))) return "Must contain numbers";
+      if (!(/[/.,@#$%]/.test(value))) return "Must contain special characters (/.,@#$%)";
+      for (let c of value) {
+        if (!/[a-zA-Z0-9/.,@#$%]/.test(c)) return `Character '${c}' not allowed`;
+      }
+      break;
+
+    case 'email':
+      if ((value.match(/@/g) || []).length !== 1) return "Exactly one '@' required";
+      const [user, domain] = value.split('@');
+      if (!user) return "Username cannot be empty";
+      if (!/^[a-zA-Z0-9]/.test(user)) return "Start with letter or number";
+      if (!/^[a-zA-Z0-9._]+$/.test(user)) return "Only letters, numbers, _, and .";
+      if (!domain.includes('.')) return "Domain must have an extension";
+      const parts = domain.split('.');
+      const hosting = parts[0];
+      const exts = parts.slice(1);
+      if (!/^[a-zA-Z0-9]+$/.test(hosting)) return "Hosting must be alphanumeric";
+      if (exts.length > 2) return "Max 2 extensions allowed";
+      for (let ext of exts) {
+        if (!/^[a-zA-Z]+$/.test(ext)) return "Extensions must be letters";
+        if (ext.length > 5) return "Extension max 5 chars";
+      }
+      break;
+
+    case 'nama':
+    case 'pekerjaan':
+    case 'kota':
+      if (!/^[a-zA-Z ]+$/.test(value)) return "Only letters and spaces";
+      break;
+
+    case 'usia':
+      const age = parseInt(value);
+      if (isNaN(age) || age < 17 || age > 80) return "Age 17-80 only";
+      break;
+
+    case 'hobi':
+      const hList = value.split(',').map(h => h.trim());
+      if (value.split(',').some(h => h.trim() === "")) return "Empty elements not allowed";
+      if (hList.length < 3) return "Min 3 hobbies required";
+      for (let h of hList) {
+        if (!/^[a-zA-Z ]+$/.test(h)) return `Hobby '${h}' only letters/spaces`;
+      }
+      break;
+
+    case 'rt':
+    case 'rw':
+      if (!/^\d+$/.test(value)) return "Numbers only";
+      break;
+
+    case 'zipc':
+      if (!/^\d{5}$/.test(value)) return "Exactly 5 digits";
+      break;
+
+    case 'lat':
+    case 'lon':
+      if (/[a-zA-Z]/.test(value)) return "No letters allowed";
+      if (isNaN(parseFloat(value))) return "Must be a decimal";
+      if (!value.includes('.')) return "Must contain a dot (.)";
+      break;
+
+    case 'nohp':
+      if (!/^\d+$/.test(value)) return "Numbers only";
+      if (value.length < 11 || value.length > 13) return "11-13 digits required";
+      break;
+  }
+  return null;
+}
+
+function setError(id, msg) {
+  const el = document.getElementById(id);
+  const errorEl = document.getElementById(`error-${id}`);
+  if (msg) {
+    el.classList.add('invalid');
+    errorEl.textContent = `❌ ${msg}`;
+  } else {
+    el.classList.remove('invalid');
+    errorEl.textContent = "";
+  }
+}
+
+for (let i = 0; i < fields.length; i++) {
+  const currentId = fields[i];
+  const currentEl = document.getElementById(currentId);
+  
+  currentEl.addEventListener('input', async function() {
+    const error = await validate(currentId, currentEl.value);
+    setError(currentId, error);
+  });
+
+  currentEl.addEventListener('blur', async function() {
+    const error = await validate(currentId, currentEl.value);
+    setError(currentId, error);
+  });
+
+  // Check previous sequence on focus
+  if (i > 0) {
+    currentEl.addEventListener('focus', async function() {
+      const prevId = fields[i-1];
+      const prevEl = document.getElementById(prevId);
+      const error = await validate(prevId, prevEl.value);
+      if (error) {
+        setError(prevId, error);
+        prevEl.focus(); // Force back to invalid field
+      }
+    });
+  }
+}
+
+form.addEventListener('submit', async function(e) {
+  let firstError = null;
+  for (let id of fields) {
+    const el = document.getElementById(id);
+    const error = await validate(id, el.value);
+    if (error) {
+      setError(id, error);
+      if (!firstError) firstError = el;
+    }
+  }
+  
+  if (firstError) {
+    firstError.focus();
+    e.preventDefault();
+    return;
+  }
+  
+  if (!confirm("Save Data? (Y/N)")) {
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+</html>
