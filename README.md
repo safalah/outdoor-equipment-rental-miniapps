@@ -1,71 +1,72 @@
-# Outdoor Rental MiniApps (Python CLI)
+# Flask Equipment Rental Management System
 
-A Command Line Interface (CLI) based outdoor equipment rental system built using Python.
+This is a web-based Equipment Rental Management System built with Python and Flask. The application supports two main roles: Admin and User (Renter), and uses SQLite for data storage via Flask-SQLAlchemy.
 
-This project simulates a real-world rental management system with user authentication, inventory management, and full CRUD operations, all implemented in a single Python file without using any external libraries or databases.
+## Features
 
----
+### Authentication & Authorization
+- **User Registration:** Users can register with personal details and address information.
+- **Login/Logout:** Secure access with session management. Includes security features like a login attempt limit (locks out after 5 failed attempts).
+- **Role-based Access Control:** Separate dashboards and functionalities for Admin and User roles.
 
-## 🚀 Features
+### Admin Features
+- **Equipment Management:** Admins can view, add, update, and delete equipment inventory.
+- **Rentals Management:** Admins can view all rental transactions, filter them by status (active, returned, cancelled), and delete rental records.
 
-### 🔐 User Authentication
-- User registration with strict validation:
-  - UserID (6–20 characters, alphanumeric, must contain letters and numbers)
-  - Password (minimum 8 characters, uppercase, lowercase, number, and symbol)
-  - Email format validation
-- Login system with maximum 5 attempts
+### User (Renter) Features
+- **View Equipment:** Browse available equipment for rent.
+- **Manage Rentals:**
+  - Create new rental transactions.
+  - Update active rentals (change quantity or duration).
+  - Cancel rentals.
+  - Return rented items.
+- **Invoicing:** View generated invoices for active rental transactions.
+- **Profile Management:** View personal profile, update UserID or password, and delete account.
 
-### 📦 Equipment Management
-- View all available outdoor gear
-- Search items by product code
-- Real-time stock display
-- Automatic stock updates after transactions
+## Tech Stack
 
-### 🛒 Rental System (Full CRUD)
-- Create new rental transactions
-- Add additional rentals
-- View personal rental history
-- Update rental quantity or duration
-- Cancel rental transactions
-- Automatic total price calculation
+- **Backend:** Python, Flask
+- **Database:** SQLite (managed via Flask-SQLAlchemy)
+- **Frontend:** HTML templates (Jinja2)
+- **Deployment:** Ready for deployment with Gunicorn (`Procfile` included)
 
-### 👤 Account Management
-- View personal user data
-- Update UserID and password
-- Delete account permanently
+## Prerequisites
 
----
+- Python 3.x
+- pip (Python package installer)
 
-## 🏕️ Equipment Categories
+## Installation & Setup
 
-- Carrier Backpacks
-- Tents
-- Hiking Shoes
-- Sleeping Bags
-- Trekking Poles
-- Hydropacks
-- Outdoor Jackets
-- Headlamps
-- Cooking Sets (Nesting)
-- Flysheets
+1. **Clone or Download the Repository**
 
----
+2. **Navigate to the Project Directory**
+   ```bash
+   cd path/to/project
+   ```
 
-## 🔀 Program Flow
-<img width="300" height="400" alt="image" src="https://github.com/user-attachments/assets/f3aef0e5-6cd0-483d-9700-9eda58165609" />
+3. **Install Dependencies**
+   Install the required Python packages from `requirements.txt`:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-<img width="2769" height="966" alt="image" src="https://github.com/user-attachments/assets/813edc85-d3d4-41f7-8525-4c6b8350072f" />
+4. **Initialize the Database**
+   The database (`tugas_project.db`) is automatically created in the `instance` folder when the application is run for the first time.
 
----
+5. **Run the Application**
+   ```bash
+   python app.py
+   ```
+   The application will be accessible at `http://127.0.0.1:5000` or `http://localhost:5000`.
 
-## ▶️ Demo
+## Project Structure
 
-<img width="400" height="250" alt="image" src="https://github.com/user-attachments/assets/35864b74-6679-45be-88c4-72c1fe843702" />
+- `app.py`: Main Flask application file containing all routes and controllers.
+- `Database.py`: Database connection and CRUD operations.
+- `Equipment_Management.py`, `Rents_Management.py`, `Renter.py`, `Main_Menu.py`, `Menu_Auth.py`, `Profile.py`, `Invoice.py`: Modules handling specific domain logic.
+- `Validators.py`: Contains validation logic (e.g., for registration).
+- `templates/`: Directory containing all HTML files.
+- `instance/`: Directory where the SQLite database file is stored.
 
-<img width="422" height="341" alt="image" src="https://github.com/user-attachments/assets/82a009b3-1c85-4094-9b99-c25bd553c0a4" />
-
-<img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/1efcff76-49ed-45e1-8a3c-dab4a8b2ef71" />
-
-<img width="400" height="513" alt="image" src="https://github.com/user-attachments/assets/81160f8a-36cc-406e-ac83-eee2423ef917" />
-
-<img width="468" height="408" alt="image" src="https://github.com/user-attachments/assets/7bd10845-e493-4dea-8322-fdc6bdc01325" />
+## Deployment
+The project includes a `Procfile` and `gunicorn` in its `requirements.txt`, making it ready for deployment on platforms like Heroku or Render.
